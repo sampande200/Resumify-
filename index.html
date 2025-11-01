@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumify - Build Your Perfect Resume</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- jsPDF and html2canvas for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <!-- Homepage Section -->
+    <section id="homepage" class="min-vh-100 d-flex align-items-center">
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-8">
+                    <div class="hero-content">
+                        <h1 class="display-3 fw-bold mb-4 hero-title">Build Your Perfect Resume in Minutes</h1>
+                        <p class="lead mb-5 hero-subtitle">Simple, Fast, and Professional Resume Builder</p>
+                        <button id="startBuildingBtn" class="btn btn-primary btn-lg px-5 py-3">Start Building</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resume Builder Section -->
+    <section id="builderPage" class="d-none py-5">
+        <div class="container-fluid">
+            <!-- Header with Controls -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <h2 class="mb-0">Resumify</h2>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button id="themeToggle" class="btn btn-outline-secondary">
+                                <span id="themeIcon">🌙</span> Dark Mode
+                            </button>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-primary active" data-template="classic">Classic</button>
+                                <button type="button" class="btn btn-outline-primary" data-template="modern">Modern</button>
+                                <button type="button" class="btn btn-outline-primary" data-template="minimal">Minimal</button>
+                            </div>
+                            <button id="resetBtn" class="btn btn-outline-danger">Reset</button>
+                            <button id="downloadBtn" class="btn btn-success">Download PDF</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Form Section -->
+                <div class="col-lg-5 col-xl-4">
+                    <div class="form-container">
+                        <form id="resumeForm">
+                            <!-- Personal Information -->
+                            <div class="form-section">
+                                <h4 class="section-title">Personal Information</h4>
+                                <div class="mb-3">
+                                    <label class="form-label">Full Name *</label>
+                                    <input type="text" class="form-control" id="fullName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email *</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Phone</label>
+                                    <input type="tel" class="form-control" id="phone">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Address</label>
+                                    <input type="text" class="form-control" id="address">
+                                </div>
+                            </div>
+
+                            <!-- Summary -->
+                            <div class="form-section">
+                                <h4 class="section-title">Professional Summary</h4>
+                                <div class="mb-3">
+                                    <label class="form-label">About Me</label>
+                                    <textarea class="form-control" id="summary" rows="4"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Education -->
+                            <div class="form-section">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="section-title mb-0">Education</h4>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="addEducation">+ Add</button>
+                                </div>
+                                <div id="educationContainer"></div>
+                            </div>
+
+                            <!-- Work Experience -->
+                            <div class="form-section">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="section-title mb-0">Work Experience</h4>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="addExperience">+ Add</button>
+                                </div>
+                                <div id="experienceContainer"></div>
+                            </div>
+
+                            <!-- Skills -->
+                            <div class="form-section">
+                                <h4 class="section-title">Skills</h4>
+                                <div class="mb-3">
+                                    <label class="form-label">Enter skills (comma-separated)</label>
+                                    <textarea class="form-control" id="skills" rows="3" placeholder="e.g., JavaScript, Python, Project Management"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Projects -->
+                            <div class="form-section">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="section-title mb-0">Projects/Achievements</h4>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="addProject">+ Add</button>
+                                </div>
+                                <div id="projectsContainer"></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Preview Section -->
+                <div class="col-lg-7 col-xl-8">
+                    <div class="preview-container">
+                        <div id="resumePreview" class="resume-preview classic-template">
+                            <div class="preview-header">
+                                <h1 id="preview-name">Your Name</h1>
+                                <div class="contact-info">
+                                    <span id="preview-email"></span>
+                                    <span id="preview-phone"></span>
+                                    <span id="preview-address"></span>
+                                </div>
+                            </div>
+
+                            <div id="preview-summary-section" class="preview-section d-none">
+                                <h3 class="preview-section-title">Professional Summary</h3>
+                                <p id="preview-summary"></p>
+                            </div>
+
+                            <div id="preview-education-section" class="preview-section d-none">
+                                <h3 class="preview-section-title">Education</h3>
+                                <div id="preview-education"></div>
+                            </div>
+
+                            <div id="preview-experience-section" class="preview-section d-none">
+                                <h3 class="preview-section-title">Work Experience</h3>
+                                <div id="preview-experience"></div>
+                            </div>
+
+                            <div id="preview-skills-section" class="preview-section d-none">
+                                <h3 class="preview-section-title">Skills</h3>
+                                <div id="preview-skills" class="skills-container"></div>
+                            </div>
+
+                            <div id="preview-projects-section" class="preview-section d-none">
+                                <h3 class="preview-section-title">Projects & Achievements</h3>
+                                <div id="preview-projects"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+</html>
